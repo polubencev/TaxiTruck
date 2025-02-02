@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "823081072226",
+    "project_id": "taxitruck-f1fc2",
+    "storage_bucket": "taxitruck-f1fc2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823081072226:android:bb3d7844e372d0985dc33b",
+        "android_client_info": {
+          "package_name": "com.example.taxitruck"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAgwmPpW2Rm6SMBUxtQuSwBFEx5L_RtQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
