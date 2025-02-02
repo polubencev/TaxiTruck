@@ -12,6 +12,8 @@ import com.example.taxitruck.screens.LoginScreen
 import com.example.taxitruck.screens.MainScreen.MainScreen
 import com.example.taxitruck.screens.MainScreen.data.LoginScreenObject
 import com.example.taxitruck.screens.MainScreen.data.MainScreenObject
+import com.example.taxitruck.screens.addbookscreen.AddBookScreen
+import com.example.taxitruck.screens.addbookscreen.data.AddBookScreenObject
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +33,12 @@ class MainActivity : ComponentActivity() {
                 composable<MainScreenObject> {navEntry->
                     val navData = navEntry.toRoute<MainScreenObject>()
 
-                    MainScreen(navData.email)
+                    MainScreen(navData.email){
+                        navController.navigate(AddBookScreenObject)
+                    }
+                }
+                composable<AddBookScreenObject> {navEntry->
+                    AddBookScreen()
                 }
             }
         }

@@ -45,6 +45,7 @@ fun LoginScreen(
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }
     val errorState = remember { mutableStateOf("") }
+    val inSystemState = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,35 +53,45 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        RoundedCornerTextField(
-            emailState.value,
-            "Email"
-        ) {
-            emailState.value = it
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-        RoundedCornerTextField(
-            passwordState.value,
-            "Password"
-        ) {
-            passwordState.value = it
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        //**********************************************************//
-        LoginButton("Регистрация") {
-            signUp(auth,
+        if(auth.currentUser?.email?.isNotBlank() == true) {
+        Log.d("MyTag", inSystemState.value.toString())
+            Text(text = ("Вы в системе как: " + auth.currentUser?.email!!),
+                fontSize = 10.sp,
+                color =  Color.White)
+        }else{
+            RoundedCornerTextField(1,
+                true,
                 emailState.value,
-                passwordState.value,
-                onSignUpSuccess = {navData->
-                    onNavigateToMainScreen(navData)
-                    errorState.value = "Регистрация прошла успешно!"
-                } ,
-                onSignUpFailure = {error ->
-                    errorState.value = error
+                "Email"
+            ) {
+                emailState.value = it
+            }
 
-                }
-            )
+            Spacer(modifier = Modifier.height(10.dp))
+            RoundedCornerTextField(
+                1,
+                true,
+                passwordState.value,
+                "Password"
+            ) {
+                passwordState.value = it
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            //**********************************************************//
+            LoginButton("Регистрация") {
+                signUp(auth,
+                    emailState.value,
+                    passwordState.value,
+                    onSignUpSuccess = { navData ->
+                        onNavigateToMainScreen(navData)
+                        errorState.value = "Регистрация прошла успешно!"
+                    },
+                    onSignUpFailure = { error ->
+                        errorState.value = error
+
+                    }
+                )
+            }
         }
         //*****************************************************************************************//
         Spacer(modifier = Modifier.height(10.dp))
@@ -90,7 +101,7 @@ fun LoginScreen(
                 passwordState.value,
                 onSignInSuccess = {navData->
                     onNavigateToMainScreen(navData)
-                    errorState.value = "Успешный вход" 
+                    errorState.value = "Успешный вход"
                 },
                 onSignInFailure = {error ->
                     errorState.value = error
@@ -99,6 +110,14 @@ fun LoginScreen(
                 )
 
         }
+        //******//
+        if(auth.currentUser!=null){
+            LoginButton("Выход") {
+                auth.signOut()
+                inSystemState.value = false
+            }
+        }
+
         Text(text = errorState.value,
             fontSize = 8.sp,
             color =  Color.Red)
@@ -131,31 +150,40 @@ private fun signUp(
         onSignUpFailure(it.message ?: "<-Unknown SignUp Error!->")
     }
 }
-
+//===================ВХОД================================//
 private fun signIn(
     auth: FirebaseAuth,
     email: String,
     password: String,
     onSignInSuccess:(MainScreenObject) ->Unit,
-    onSignInFailure:(String)->Unit
+    onSignInFailure:(String)->Unit,
 ) {
-    if(email.isBlank() || password.isBlank()) {
-    onSignInFailure("Заполните все поля!")
+    if ((email.isBlank() || password.isBlank()) && auth.currentUser == null) {
+        onSignInFailure("Заполните все поля!")
         return
-    }
-    auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-
-        if (task.isSuccessful) {
-            onSignInSuccess(
-                MainScreenObject(
-                    uid = task.result.user?.uid ?: "",
-                    email = task.result.user?.email?: ""
-                )
+    } else if (auth.currentUser != null) {
+        onSignInSuccess(
+            MainScreenObject(
+                uid = auth.currentUser?.uid ?: "",
+                email = auth.currentUser?.email ?: ""
             )
-        }
-    }.addOnFailureListener(){error->
-        onSignInFailure(error.message?: "Error")
+        )
+    } else {
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
 
+            if (task.isSuccessful) {
+                onSignInSuccess(
+                    MainScreenObject(
+                        uid = task.result.user?.uid ?: "",
+                        email = task.result.user?.email ?: ""
+                    )
+                )
+
+            }
+        }.addOnFailureListener() { error ->
+            onSignInFailure(error.message ?: "Error")
+
+        }
     }
 }
 

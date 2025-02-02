@@ -13,12 +13,16 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun RoundedCornerTextField(
-    text:String,
+    maxLines: Int = 1,
+    singleLine: Boolean = true,
+    text: String,
     label: String,
-    onValueChange: (String) ->Unit,
+    onValueChange: (String) -> Unit,
+
 
 ) {
-    TextField(value = text,
+    TextField(
+        value = text,
         onValueChange = {
             onValueChange(it)
 
@@ -32,6 +36,10 @@ fun RoundedCornerTextField(
             unfocusedTextColor = Color.Black
 
         ), placeholder = { Text(label) },
-        modifier = Modifier.fillMaxWidth().border(1.dp,Color.Black, RoundedCornerShape(10.dp)),
-        singleLine = true
-        )}
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, Color.Black, RoundedCornerShape(10.dp)),
+        singleLine = singleLine,
+        maxLines = maxLines
+    )
+}

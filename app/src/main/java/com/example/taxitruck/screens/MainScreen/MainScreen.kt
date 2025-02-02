@@ -19,7 +19,11 @@ import com.example.taxitruck.screens.MainScreen.data.MainScreenObject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(email:String) {
+fun MainScreen(
+    email:String,
+    onAdminClick:()->Unit
+)
+{
     val drawerState = rememberDrawerState(DrawerValue.Open)
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -27,7 +31,9 @@ fun MainScreen(email:String) {
         drawerContent = {
             Column(Modifier.fillMaxWidth(0.7f)) {
                 DrawerHeader(email)
-                DrawerBody()  //Тело дравера
+                DrawerBody{
+                    onAdminClick()
+                } //Тело дравера
             }
         }
     ) {

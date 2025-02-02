@@ -56,7 +56,7 @@ android {
 dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlix.serialization.json)
-
+    implementation(libs.coil.compose)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
