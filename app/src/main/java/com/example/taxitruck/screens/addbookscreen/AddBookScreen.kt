@@ -1,6 +1,8 @@
 package com.example.taxitruck.screens.addbookscreen
 
 import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -19,16 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.taxitruck.R
+import com.example.taxitruck.data.Book
 import com.example.taxitruck.screens.LoginButton
 import com.example.taxitruck.screens.RoundedCornerTextField
-import coil3.compose.rememberAsyncImagePainter
-import com.example.taxitruck.data.Book
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -37,8 +39,12 @@ import com.google.firebase.storage.ktx.storage
 
 @Preview(showBackground = true)
 @Composable
-fun AddBookScreen() {
-    var selectedCategory: String = ""
+fun AddBookScreen(
+    onSaved: () -> Unit= {}
+) {
+    val context = LocalContext.current
+    var selectedCategory = remember{
+        mutableStateOf("")}
     val title = remember { mutableStateOf("") }
     val description = remember { mutableStateOf("") }
     val price = remember { mutableStateOf("") }
@@ -52,7 +58,8 @@ fun AddBookScreen() {
 
     }
     Image(
-        painter = rememberAsyncImagePainter(model = imageURI.value),
+        painter = painterResource(R.drawable.background),
+        //painter = rememberAsyncImagePainter(model = imageURI.value),
         contentDescription = "background",
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize(),
@@ -67,11 +74,11 @@ fun AddBookScreen() {
         verticalArrangement = Arrangement.Top
     ) {
         Image(
-            painter = painterResource(R.drawable.logo_add_truck_track),
+            painter = painterResource(R.drawable.logo_card_orders),
             contentDescription = "", contentScale = ContentScale.Crop
         )
         Text(
-            text = "Добавить новую книгу в базу",
+            text = "Добавить новый заказ",
             color = Color.Black,
             fontSize = 20.sp,
             textAlign = TextAlign.Start,
@@ -94,7 +101,8 @@ fun AddBookScreen() {
 
         Spacer(modifier = Modifier.height(10.dp))
         RoundedDropDownMenu { selectedItem ->
-            selectedCategory = selectedItem
+            selectedCategory.value = selectedItem
+            Log.d("MyTag", selectedItem)
         }
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -125,9 +133,9 @@ fun AddBookScreen() {
         }
         Spacer(modifier = Modifier.height(10.dp))
 
-
+//***********************************SAVE BUTTON****************************************************//
         LoginButton("Сохранить") {
-            saveBookImage(uri = imageURI.value!!,
+            /*saveBookImage(uri = imageURI.value!!,
                 storage,
                 firestore,
                 Book(name = title.value,
@@ -137,6 +145,26 @@ fun AddBookScreen() {
                     ),
                 onSaved = {},
                 onError = {})
+
+             */ //Save image book to Firestore
+            val book = Book(
+                name = title.value,
+                description = description.value,
+                price = price.value,
+                category = selectedCategory.value,
+                imageUrl = ""
+            )
+            saveBookToFireStore(firestore,"", book, onSaved = {
+                Toast.makeText(context, "Книга {${book.name}} успешно сохранена!",Toast.LENGTH_SHORT).show()
+                title.value = ""
+                description.value = ""
+                price.value = ""
+                selectedCategory.value = ""
+                imageURI.value = null
+                onSaved() //Это для возвращения на 1 экран назад,вызывается в MainActivity в навигации
+            }, onError = {error->
+                Toast.makeText(context, "Ошибка сохранения книги!:" + error,Toast.LENGTH_SHORT).show()
+            })
         }
         //*****************************************************************************************//
 
@@ -171,15 +199,15 @@ private fun saveBookToFireStore(
     uri: String,
     book: Book,
     onSaved: () -> Unit,
-    onError: () -> Unit
+    onError: (String) -> Unit
 ) {
     val db = fireStore.collection("books")
     val key = db.document().id
     db.document(key).set(book.copy(key = key, imageUrl = uri)).addOnSuccessListener {
         onSaved()
     }
-        .addOnFailureListener {
-            onError()
+        .addOnFailureListener {error->
+            onError(error.message!!)
         }
 
 }

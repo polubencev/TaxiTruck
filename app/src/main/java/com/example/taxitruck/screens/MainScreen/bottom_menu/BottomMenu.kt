@@ -7,7 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import com.example.taxitruck.R
 
 @Composable
 fun BottomMenu() {
@@ -17,7 +19,7 @@ fun BottomMenu() {
         BottomMenuItem.Settings
     )
     val selectedItems = remember { mutableStateOf("Home") }
-    NavigationBar {
+    NavigationBar(containerColor = colorResource(R.color.drawer_header)) {
 
         items.forEach() { item ->
             NavigationBarItem(

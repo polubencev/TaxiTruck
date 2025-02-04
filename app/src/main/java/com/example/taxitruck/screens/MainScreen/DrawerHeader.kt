@@ -31,7 +31,7 @@ fun DrawerHeader(email: String) {
         , verticalArrangement = Arrangement.Center
     )
     {
-        Image(painter = painterResource(R.drawable.drawer_logo), contentDescription = "logo",
+        Image(painter = painterResource(R.drawable.logo_login_screen), contentDescription = "logo",
             modifier = Modifier.size(90.dp))
 
         Spacer(modifier = Modifier.height(10.dp))
