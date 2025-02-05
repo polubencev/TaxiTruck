@@ -36,16 +36,18 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+
 @Composable
 fun MainScreen(
     email:String,
-    onAdminClick:()->Unit
+    onAdminClick:() -> Unit,
+    onBookEditClick:(Book) -> Unit
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
     val bookListState = remember { mutableStateOf(emptyList<Book>())}
     val downloadImageState = remember { mutableStateOf<Boolean>(false) }
+    val isAdminState = remember { mutableStateOf<Boolean>(false) }
 
     LaunchedEffect(Unit) {
         val db = Firebase.firestore
@@ -67,11 +69,12 @@ fun MainScreen(
         drawerContent = {
             Column(Modifier.fillMaxWidth(0.7f)) {
                 DrawerHeader(email)
-                DrawerBody {
+                DrawerBody(onAdmin = {isAdmin ->
+                    isAdminState.value = isAdmin
+                }) {
                     coroutineScope.launch {
                         drawerState.close()
                     }
-
                     onAdminClick()
                 } //Тело дравера
             }
@@ -101,7 +104,9 @@ fun MainScreen(
                 ) {
 
                     items(bookListState.value) { book ->
-                        BookListItemUI(book)
+                        BookListItemUI(book, isAdminState.value){book->
+                            onBookEditClick(book)
+                        }
 
                     }
                 }

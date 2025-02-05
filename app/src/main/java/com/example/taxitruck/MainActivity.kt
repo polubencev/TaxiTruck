@@ -22,25 +22,39 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 
-            NavHost(navController= navController, startDestination = LoginScreenObject){
+            NavHost(navController= navController, startDestination = LoginScreenObject) {
                 composable<LoginScreenObject> {
-                    LoginScreen{navData->
+                    LoginScreen { navData ->
                         navController.navigate(navData)
-
                     }
                 }
 
                 composable<MainScreenObject> {navEntry->
                     val navData = navEntry.toRoute<MainScreenObject>()
 
-                    MainScreen(navData.email){
+                    MainScreen(navData.email,
+                        onAdminClick = {
                         navController.navigate(AddBookScreenObject)
+                    },
+                        onBookEditClick = {book->
+                        navController.navigate(AddBookScreenObject(
+                            key = book.key,
+                            name = book.name,
+                            description = book.description,
+                            price = book.price,
+                            imageUrl = book.imageUrl,
+                            category = book.category
+                        ))
+                    }
+                    );
+                    {
+
+                        navController.navigate(AddBookScreenObject())
                     }
                 }
                 composable<AddBookScreenObject> {navEntry->
-                    AddBookScreen{
-                        navController.popBackStack()
-                    }
+                    val navData = navEntry.toRoute<AddBookScreenObject>()
+                    AddBookScreen(navData)
                 }
             }
         }

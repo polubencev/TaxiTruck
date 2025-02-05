@@ -13,10 +13,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,7 +37,10 @@ import com.example.taxitruck.R
 import com.example.taxitruck.data.Book
 
 @Composable
-fun BookListItemUI(book: Book) {
+fun BookListItemUI(book: Book,
+                   isAdmin: Boolean = false,
+                   onEditBook:(Book) -> Unit ={}
+) {
 
     Card(modifier=Modifier.fillMaxWidth(0.8f).border(1.dp,Color.LightGray,RoundedCornerShape(10.dp))
         .padding(start = 0.dp, end = 0.dp),
@@ -96,6 +103,13 @@ fun BookListItemUI(book: Book) {
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.Center) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                        if(isAdmin) {
+                            IconButton(onClick = {
+                            onEditBook(book)      //Передаем книгу наверх,которую хотим редактировать
+                            }) {
+                                Icon(Icons.Default.Create, "")
+                            }
+                        }
                         /****************/
                         Button(onClick = {
 

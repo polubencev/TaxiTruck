@@ -32,24 +32,25 @@ import com.example.taxitruck.R
 import com.example.taxitruck.data.Book
 import com.example.taxitruck.screens.LoginButton
 import com.example.taxitruck.screens.RoundedCornerTextField
+import com.example.taxitruck.screens.addbookscreen.data.AddBookScreenObject
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 
 @Preview(showBackground = true)
 @Composable
 fun AddBookScreen(
+    navData: AddBookScreenObject = AddBookScreenObject(),
     onSaved: () -> Unit= {}
 ) {
 
     val context = LocalContext.current
     val cr = context.contentResolver
     val selectedCategory = remember{
-        mutableStateOf("")}
-    val title = remember { mutableStateOf("") }
-    val description = remember { mutableStateOf("") }
-    val price = remember { mutableStateOf("") }
+        mutableStateOf(navData.category)}
+    val title = remember { mutableStateOf(navData.name) }
+    val description = remember { mutableStateOf(navData.description) }
+    val price = remember { mutableStateOf(navData.price) }
     val imageURI = remember { mutableStateOf<Uri?>(null) }
     val firestore = remember { Firebase.firestore }
     //val storage = remember { Firebase.storage }
@@ -144,7 +145,7 @@ fun AddBookScreen(
                 description = description.value,
                 price = price.value,
                 category = selectedCategory.value,
-                imageUrl = imageToBase64(imageURI.value!!,cr)
+                imageUrl = "" //imageToBase64(imageURI.value!!,cr)
             )
             saveBookToFireStore(firestore,book,
                 onSaved = {

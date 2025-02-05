@@ -1,5 +1,6 @@
 package com.example.taxitruck.screens.MainScreen
 
+import android.icu.text.UnicodeSetIterator
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,6 +39,7 @@ import com.google.firebase.ktx.Firebase
 
 @Composable
 fun DrawerBody(
+    onAdmin:(Boolean)->Unit,
     onAdminClick:()->Unit
 ) {
     val isAdminState = remember{ mutableStateOf(false) }
@@ -45,6 +47,7 @@ fun DrawerBody(
     LaunchedEffect(Unit) {
         isAdmin {it->
             isAdminState.value = it         //Проверка на то,что администратор
+            onAdmin(isAdminState.value)
         }
     }
 
