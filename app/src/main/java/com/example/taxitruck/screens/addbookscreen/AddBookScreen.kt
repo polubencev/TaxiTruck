@@ -35,7 +35,6 @@ import com.example.taxitruck.screens.RoundedCornerTextField
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 
 @Preview(showBackground = true)
@@ -46,14 +45,14 @@ fun AddBookScreen(
 
     val context = LocalContext.current
     val cr = context.contentResolver
-    var selectedCategory = remember{
+    val selectedCategory = remember{
         mutableStateOf("")}
     val title = remember { mutableStateOf("") }
     val description = remember { mutableStateOf("") }
     val price = remember { mutableStateOf("") }
     val imageURI = remember { mutableStateOf<Uri?>(null) }
     val firestore = remember { Firebase.firestore }
-    val storage = remember { Firebase.storage }
+    //val storage = remember { Firebase.storage }
 
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()

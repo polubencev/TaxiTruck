@@ -49,8 +49,8 @@ fun BookListItemUI(book: Book) {
                 horizontalArrangement = Arrangement.Start) {
 
                 /**************Тут декодирование изображения по base64*****************/
-                val base64Image = Base64.decode(book.imageUrl, Base64.DEFAULT )
-                val bitmapImageDecode = BitmapFactory.decodeByteArray(base64Image,0,base64Image.size)
+                //val base64Image = Base64.decode(book.imageUrl, Base64.DEFAULT )
+                //val bitmapImageDecode = BitmapFactory.decodeByteArray(base64Image,0,base64Image.size)
 
                 AsyncImage(
                     model = R.drawable.logo_card_orders, contentDescription = "",
