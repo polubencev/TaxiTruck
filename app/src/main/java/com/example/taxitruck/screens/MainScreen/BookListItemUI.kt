@@ -1,5 +1,7 @@
 package com.example.taxitruck.screens.MainScreen
 
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -45,6 +48,10 @@ fun BookListItemUI(book: Book) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start) {
 
+                /**************Тут декодирование изображения по base64*****************/
+                val base64Image = Base64.decode(book.imageUrl, Base64.DEFAULT )
+                val bitmapImageDecode = BitmapFactory.decodeByteArray(base64Image,0,base64Image.size)
+
                 AsyncImage(
                     model = R.drawable.logo_card_orders, contentDescription = "",
                     modifier = Modifier.size(35.dp).padding(start = 0.dp)
@@ -65,7 +72,9 @@ fun BookListItemUI(book: Book) {
                 book.description,
                 color = Color.LightGray,
                 fontSize = 14.sp,
-                modifier = Modifier.padding(start = 7.dp)
+                modifier = Modifier.padding(start = 7.dp),
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
             //***************PRICE**************************//
             Spacer(modifier = Modifier.height(5.dp))

@@ -1,5 +1,6 @@
 package com.example.taxitruck.screens.addbookscreen
 
+import android.content.ContentResolver
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -42,7 +43,9 @@ import com.google.firebase.storage.ktx.storage
 fun AddBookScreen(
     onSaved: () -> Unit= {}
 ) {
+
     val context = LocalContext.current
+    val cr = context.contentResolver
     var selectedCategory = remember{
         mutableStateOf("")}
     val title = remember { mutableStateOf("") }
@@ -51,6 +54,7 @@ fun AddBookScreen(
     val imageURI = remember { mutableStateOf<Uri?>(null) }
     val firestore = remember { Firebase.firestore }
     val storage = remember { Firebase.storage }
+
     val imageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -135,26 +139,16 @@ fun AddBookScreen(
 
 //***********************************SAVE BUTTON****************************************************//
         LoginButton("Сохранить") {
-            /*saveBookImage(uri = imageURI.value!!,
-                storage,
-                firestore,
-                Book(name = title.value,
-                    description = description.value,
-                    price = price.value,
-                    category = selectedCategory,
-                    ),
-                onSaved = {},
-                onError = {})
-
-             */ //Save image book to Firestore
+            //Save image book to Firestore
             val book = Book(
                 name = title.value,
                 description = description.value,
                 price = price.value,
                 category = selectedCategory.value,
-                imageUrl = ""
+                imageUrl = imageToBase64(imageURI.value!!,cr)
             )
-            saveBookToFireStore(firestore,"", book, onSaved = {
+            saveBookToFireStore(firestore,book,
+                onSaved = {
                 Toast.makeText(context, "Книга {${book.name}} успешно сохранена!",Toast.LENGTH_SHORT).show()
                 title.value = ""
                 description.value = ""
@@ -170,9 +164,17 @@ fun AddBookScreen(
 
     }
 }
+/**************************SAVE IMAGE BASE64*******************************************************/
+private fun imageToBase64(uri: Uri, contentResolver: ContentResolver):String{
+    val inputStream = contentResolver.openInputStream(uri)
+    val bytes = inputStream?.readBytes()
+    return bytes?.let{
+        android.util.Base64.encodeToString(it,android.util.Base64.DEFAULT)
+    }?: ""
+}
 
 //*********************************************************************//
-private fun saveBookImage(
+/*private fun saveBookImage(
     uri: Uri,
     storage: FirebaseStorage,
     fireStore: FirebaseFirestore,
@@ -192,18 +194,17 @@ private fun saveBookImage(
 
         }
     }
-}
+}*/
 
 private fun saveBookToFireStore(
     fireStore: FirebaseFirestore,
-    uri: String,
     book: Book,
     onSaved: () -> Unit,
     onError: (String) -> Unit
 ) {
     val db = fireStore.collection("books")
     val key = db.document().id
-    db.document(key).set(book.copy(key = key, imageUrl = uri)).addOnSuccessListener {
+    db.document(key).set(book.copy(key = key)).addOnSuccessListener {
         onSaved()
     }
         .addOnFailureListener {error->
